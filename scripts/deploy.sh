@@ -44,10 +44,10 @@ fi
 
 # Check if /opt/streamlit/evtx-json directory exists, if not create it
 if [ ! -d "/opt/streamlit/syslog-mulitplier" ]; then
-    echo "Creating /opt/streamlit/evtx-json directory..."
+    echo "Creating /opt/streamlit/syslog-multiplier directory..."
     mkdir -p /opt/streamlit/syslog-multiplier
 else
-    echo "/opt/streamlit/evtx-json directory already exists."
+    echo "/opt/streamlit/syslog-multiplier directory already exists."
 fi
 
 curl https://raw.githubusercontent.com/chrisjbawden/syslog-multiplier/refs/heads/main/app/app.py -o /opt/streamlit/syslog-multiplier/app.py
