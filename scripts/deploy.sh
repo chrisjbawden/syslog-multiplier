@@ -12,7 +12,11 @@ echo " "
 echo " Installing streamlit ..."
 echo " "
 
-apt install -y python3 python3-pip
+apt update
+
+apt install -y python3 
+
+apt install -y python3-pip
 
 pip install streamlit --break-system-packages
 
