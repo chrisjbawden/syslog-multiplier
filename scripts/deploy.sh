@@ -12,6 +12,10 @@ echo " "
 
 apt install -y gpg wget curl
 
+# Clean up unnecessary files
+echo "Cleaning up..."
+apt-get clean
+
 echo " "
 echo " Installing streamlit ..."
 echo " "
