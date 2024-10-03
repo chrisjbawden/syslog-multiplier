@@ -6,7 +6,7 @@ echo " "
 echo "Getting basics ..."
 echo " "
 
-apt install gpg wget curl
+apt install -y gpg wget curl
 
 echo " "
 echo " Installing streamlit ..."
