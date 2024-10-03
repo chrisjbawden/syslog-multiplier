@@ -27,18 +27,12 @@ fi
 # Check if /opt/streamlit/evtx-json directory exists, if not create it
 if [ ! -d "/opt/streamlit/syslog-mulitplier" ]; then
     echo "Creating /opt/streamlit/evtx-json directory..."
-    mkdir -p /opt/streamlit/evtx-json
+    mkdir -p /opt/streamlit/syslog-multiplier
 else
     echo "/opt/streamlit/evtx-json directory already exists."
 fi
 
-# Check if the app.py file exists in /opt/streamlit/evtx-json, if not download it
-if [ ! -f "/opt/streamlit/syslog-mulitplier/app.py" ]; then
-    echo "Downloading app.py to /opt/streamlit/evtx-json..."
-    curl https://raw.githubusercontent.com/chrisjbawden/syslog-multiplier/refs/heads/main/app/app.py -o /opt/streamlit/syslog-multiplier/app.py
-else
-    echo "app.py already exists in /opt/streamlit/evtx-json."
-fi
+curl https://raw.githubusercontent.com/chrisjbawden/syslog-multiplier/refs/heads/main/app/app.py -o /opt/streamlit/syslog-multiplier/app.py
 
 echo " "
 echo "Installing logstash ..." 
