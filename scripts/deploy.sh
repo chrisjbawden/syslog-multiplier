@@ -23,7 +23,7 @@ apt-get install -y python3 python3-pip
 echo " "
 
 # Install Streamlit, Evtx, and xmltodict system-wide
-echo "Installing Streamlit, Evtx, and xmltodict..."
+echo "Installing Streamlit ..."
 pip install streamlit --break-system-packages
 
 echo " "
