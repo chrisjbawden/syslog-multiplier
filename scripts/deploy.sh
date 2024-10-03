@@ -61,6 +61,8 @@ wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o
 echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-8.x.list
 apt-get update && apt-get install logstash -y
 
+bin/logstash-plugin install logstash-output-syslog
+
 curl https://raw.githubusercontent.com/chrisjbawden/syslog-multiplier/refs/heads/main/config/logstash.conf -o /etc/logstash/logstash.conf
 
 echo "xpack.monitoring.enabled: false" | tee -a /etc/logstash/logstash.yml
