@@ -14,7 +14,7 @@ echo " "
 
 apt install -y python3 python3-pip
 
-pip install streamlit
+pip install streamlit --break-system-packages
 
 # Check if /opt/streamlit directory exists, if not create it
 if [ ! -d "/opt/streamlit" ]; then
