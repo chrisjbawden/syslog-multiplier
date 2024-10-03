@@ -1,6 +1,10 @@
 #!/bin/bash
 sleep 1
-apt update
+
+echo "Updating package lists..."
+apt-get update -y
+
+echo " "
 
 echo " "
 echo "Getting basics ..."
@@ -12,13 +16,23 @@ echo " "
 echo " Installing streamlit ..."
 echo " "
 
-apt update
+# Install Python and pip system-wide
+echo "Installing Python and pip..."
+apt-get install -y python3 python3-pip
 
-apt install -y python3 
+echo " "
 
-apt install -y python3-pip
-
+# Install Streamlit, Evtx, and xmltodict system-wide
+echo "Installing Streamlit, Evtx, and xmltodict..."
 pip install streamlit --break-system-packages
+
+echo " "
+
+# Clean up unnecessary files
+echo "Cleaning up..."
+apt-get clean
+
+echo " "
 
 # Check if /opt/streamlit directory exists, if not create it
 if [ ! -d "/opt/streamlit" ]; then
