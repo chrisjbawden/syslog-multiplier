@@ -45,9 +45,9 @@ apt-get update && apt-get install logstash -y
 
 curl https://raw.githubusercontent.com/chrisjbawden/syslog-multiplier/refs/heads/main/config/logstash.conf -o /etc/logstash/logstash.conf
 
-echo "xpack.monitoring.enabled: false" | tee -a /etc/logstash/config/logstash.yml
-echo "config.reload.automatic: true" | tee -a /etc/logstash/config/logstash.yml
-echo "config.reload.interval: 3s" | tee -a /etc/logstash/config/logstash.yml
+echo "xpack.monitoring.enabled: false" | tee -a /etc/logstash/logstash.yml
+echo "config.reload.automatic: true" | tee -a /etc/logstash/logstash.yml
+echo "config.reload.interval: 3s" | tee -a /etc/logstash/logstash.yml
 
 /usr/share/logstash/bin/logstash -f /etc/logstash/logstash.conf &
 
