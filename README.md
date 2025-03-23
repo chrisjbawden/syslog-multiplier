@@ -10,3 +10,5 @@ docker run -it -d \
   --name syslog-multiplier \
   chrisjbawden/syslog-multiplier
 ```
+
+Default code/password: 1234
