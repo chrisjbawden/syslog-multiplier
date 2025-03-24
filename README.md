@@ -12,6 +12,7 @@ docker run -it -d \
 ```
 
 1. Log into the web console http://[]:8501
+
 Note: Default code/password: 1234
 
 2. Modify the logstash config and hit save
