@@ -113,4 +113,3 @@ apt clean
 /usr/share/logstash/bin/logstash -f /opt/syslog-multiplier/logstash.conf &
 
 streamlit run /opt/syslog-multiplier/app.py
-
