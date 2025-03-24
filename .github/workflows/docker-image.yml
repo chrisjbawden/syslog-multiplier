@@ -21,4 +21,5 @@ jobs:
     - name: Build and push docker image
       run: |
         docker build ./build --file ./build/Dockerfile --tag chrisjbawden/syslog-multiplier:$(date +%Y%m%d%H%M) --tag chrisjbawden/syslog-multiplier:latest
-        docker push chrisjbawden/syslog-multiplier --tag chrisjbawden/syslog-multiplier:$(date +%Y%m%d%H%M) --tag chrisjbawden/syslog-multiplier:latest
+        docker push chrisjbawden/syslog-multiplier:$(date +%Y%m%d%H%M)
+        docker push chrisjbawden/syslog-multiplier:latest
