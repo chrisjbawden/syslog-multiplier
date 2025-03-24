@@ -20,6 +20,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build and push docker image
       run: |
-        docker build ./build --file ./build/Dockerfile --tag chrisjbawden/syslog-multiplier:$(date +%Y%m%d%H%M) --tag chrisjbawden/syslog-multiplier:latest
-        docker push chrisjbawden/syslog-multiplier:$(date +%Y%m%d%H%M)
+        TIMESTAMP=$(date +%Y%m%d%H%M)
+        docker build ./build --file ./build/Dockerfile --tag chrisjbawden/syslog-multiplier:$TIMESTAMP --tag chrisjbawden/syslog-multiplier:latest
+        docker push chrisjbawden/syslog-multiplier:$TIMESTAMP
         docker push chrisjbawden/syslog-multiplier:latest
