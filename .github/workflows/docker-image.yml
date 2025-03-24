@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'build/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'build/**'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build Docker image
+      run: docker build ./build --file ./build/Dockerfile --tag chrisjbawden/syslog-multiplier:$(date +%Y%m%d%H%M) --tag chrisjbawden/syslog-multiplier:latest
