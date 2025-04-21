@@ -11,7 +11,7 @@ docker run -it -d \
   chrisjbawden/syslog-multiplier
 ```
 
-1. Log into the web console http://[]:8501
+1. Log into the web console http://[ip/url]:8501
 
       Note: Default code/password: 1234
 
