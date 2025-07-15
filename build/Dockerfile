@@ -20,6 +20,7 @@ RUN apt-get update && \
     echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list && \
     apt-get update && \
     apt-get install -y logstash && \
+    /usr/share/logstash/bin/logstash-plugin install logstash-output-syslog && \
     # Install Python packages
     pip3 install --break-system-packages --no-cache-dir streamlit evtx xmltodict && \
     # Clean up
