@@ -13,7 +13,8 @@ RUN apt-get update && \
         python3-pip \
         apt-transport-https \
         lsb-release \
-        ca-certificates && \
+        ca-certificates \
+        openjdk-17-jdk && \
     # Add Elastic GPG key and repository for Logstash
     wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elastic-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list && \
