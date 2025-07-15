@@ -21,7 +21,7 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y logstash && \
     # Install Python packages
-    pip3 install --no-cache-dir streamlit evtx xmltodict && \
+    pip3 install --break-system-packages --no-cache-dir streamlit evtx xmltodict && \
     # Clean up
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
