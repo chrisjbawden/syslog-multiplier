@@ -7,7 +7,7 @@ docker run -it -d \
   -p 8502:8501 \
   -p 514:514 \
   -p 514:514/udp \
-  --restart unless-stoppped \
+  --restart unless-stopped \
   --name syslog-multiplier \
   chrisjbawden/syslog-multiplier
 ```
