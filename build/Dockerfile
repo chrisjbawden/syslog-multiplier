@@ -22,8 +22,6 @@ RUN apt-get update && \
     apt-get install -y logstash && \
     # Install Python packages
     pip3 install --no-cache-dir streamlit evtx xmltodict && \
-    # Install logstash plugin
-    /usr/share/logstash/bin/logstash-plugin install logstash-output-syslog && \
     # Clean up
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
