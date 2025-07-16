@@ -1,4 +1,4 @@
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 import streamlit as st
 import os
@@ -128,11 +128,13 @@ if not st.session_state["authenticated"]:
 #---------------------------------- Version ----------------------------------------------
 
 if new_version and compare_versions(current_version, new_version):
-    info_col, update_col = st.columns([4,1])
+    info_col, update_col = st.columns([3,1])
     with info_col:
+        st.markdown("""<div style="margin-top: 0px;"></div>""", unsafe_allow_html=True)
         st.info(f"**A newer version is available: {new_version}** (current: {current_version})")
     with update_col:
-        if st.button("Update with newer"):
+        st.markdown("""<div style="margin-top: 25px;"></div>""", unsafe_allow_html=True)
+        if st.button("Update app", use_container_width=True):
             try:
                 # Back up current app.py
                 backup_path = CURRENT_APP_PATH + f".bak_{current_version}"
@@ -152,14 +154,18 @@ with st.container():
     is_running = get_logstash_status()
     if not is_running:
         with status_col:
+            st.markdown("""<div style="margin-top: 0px;"></div>""", unsafe_allow_html=True)
             st.warning("⚠️ Logstash is **not running**!")
         with button_col:
-            if st.button("Restart Logstash"):
+            st.markdown("""<div style="margin-top: 25px;"></div>""", unsafe_allow_html=True)
+            if st.button("Restart Logstash",  use_container_width=True):
                 success, msg = restart_logstash()
                 if success:
                     st.success(msg)
+                    time.sleep(3)
                 else:
                     st.error(msg)
+                    time.sleep(3)
                 st.rerun()
 
 # ------------------------------- Main App: Raw Configuration Editor -------------------------------
@@ -195,7 +201,7 @@ raw_config = render_text_area()
 
 col1, col2, col3 = st.columns([3, 2, 2])
 with col2:
-    if st.button("Save Configuration"):
+    if st.button("Save Configuration", use_container_width=True):
         try:
             with open(LOGSTASH_CONF_PATH, "w") as f:
                 f.write(raw_config)
@@ -207,7 +213,7 @@ with col2:
             st.error(f"Failed to save configuration: {e}")
 
 with col3:
-    if st.button("Reload Configuration"):
+    if st.button("Reload Configuration", use_container_width=True):
         # Reload the file and update session state
         st.session_state["raw_config"] = load_config()
         # Increment the refresh counter to force a new unique key
@@ -225,7 +231,7 @@ with st.expander("Backup & Restore"):
         st.empty()
 
     with col2:
-        if st.button("Create Backup"):
+        if st.button("Create Backup", use_container_width=True):
             if os.path.exists(LOGSTASH_CONF_PATH):
                 backup_dir = os.path.dirname(LOGSTASH_CONF_PATH)
                 # Include a timestamp in the file name
@@ -245,7 +251,7 @@ with st.expander("Backup & Restore"):
             else:
                 st.error("No configuration file to backup.")
     with col3:
-        st.download_button("Download Current Config", raw_config, file_name="logstash.conf")
+        st.download_button("Download Config", raw_config, file_name="logstash.conf", use_container_width=True)
 
     st.markdown('---')
 
@@ -258,7 +264,7 @@ with st.expander("Backup & Restore"):
         # Return a very old date if no match (ensures these files appear at the end)
         return datetime.min
 
-    st.markdown("#### Existing Backups")
+    st.markdown("#### Backups")
     backup_dir = os.path.dirname(LOGSTASH_CONF_PATH)
     backup_files = [f for f in os.listdir(backup_dir) if re.match(r"^\d{2}-\d{2}-\d{4}_[0-9]{2}-[0-9]{2}(_\d+)?\.conf$", f)]
     backup_files = sorted(backup_files, key=lambda f: extract_datetime(f), reverse=True)
@@ -273,11 +279,11 @@ with st.expander("Backup & Restore"):
                 try:
                     with open(backup_path, "r") as f:
                         backup_content = f.read()
-                    st.download_button("Download", backup_content, file_name=backup)
+                    st.download_button("Download", backup_content, file_name=backup, use_container_width=True)
                 except Exception as e:
                     st.error(f"Error reading backup: {e}")
             with cols[2]:
-                if st.button("Restore", key=f"restore_{backup}"):
+                if st.button("Restore", key=f"restore_{backup}", use_container_width=True):
                     try:
                         with open(backup_path, 'r') as f:
                             content = f.read()
@@ -291,7 +297,7 @@ with st.expander("Backup & Restore"):
                     except Exception as e:
                         st.error(f"Failed to restore backup: {e}")
             with cols[3]:
-                if st.button("Delete", key=f"delete_{backup}"):
+                if st.button("Delete", key=f"delete_{backup}", use_container_width=True):
                     try:
                         os.remove(backup_path)
                         st.success(f"Deleted backup: {backup}")
@@ -306,7 +312,9 @@ with st.expander("Backup & Restore"):
     st.markdown("#### Upload Backup File")
     with st.form(clear_on_submit=True, key="upload_form"):
         uploaded_backup = st.file_uploader("Upload a backup file", type=["conf", "txt"])
-        submit_upload = st.form_submit_button("Upload Backup")
+        col1, col2 = st.columns([3,1])
+        with col2:
+            submit_upload = st.form_submit_button("Upload Backup", use_container_width=True)
 
     if submit_upload:
         if uploaded_backup is not None:
@@ -323,25 +331,48 @@ with st.expander("Backup & Restore"):
         else:
             st.error("No file uploaded.")
 
+st.write("---")
+
 # ------------------------------- Passcode Management Section -------------------------------
 with st.expander("Access"):
     new_code = st.text_input("Enter new passcode", type="password", key="new_passcode")
-    if st.button("Update Passcode"):
-        if new_code:
-            try:
-                with open(PASSCODE_FILE, "w") as f:
-                    f.write(new_code)
-                st.success("Passcode updated successfully!")
-            except Exception as e:
-                st.error(f"Error updating passcode: {e}")
+    col1, col2 = st.columns([3,1])
+    with col2:
+        if st.button("Update Passcode", use_container_width=True):
+            if new_code:
+                try:
+                    with open(PASSCODE_FILE, "w") as f:
+                        f.write(new_code)
+                    st.success("Passcode updated successfully!")
+                except Exception as e:
+                    st.error(f"Error updating passcode: {e}")
+            else:
+                st.error("Please enter a new passcode.")
+
+
+
+
+# -------------------------------
+# Restart Logstash Button (Bottom)
+# -------------------------------
+st.markdown("---")
+col1, col2 = st.columns([3, 1])
+with col2:
+    if st.button("Restart Logstash", key="bottom_restart", use_container_width=True):
+        success, msg = restart_logstash()
+        if success:
+            st.success(msg)
         else:
-            st.error("Please enter a new passcode.")
+            st.error(msg)
+        time.sleep(3)
+        st.rerun()
+
 
 # JavaScript code that resets a timer on user activity and refreshes the page after 30 minutes of inactivity.
 js_code = """
 <script>
   // Set inactivity timeout period in milliseconds (30 minutes = 1800000 ms)
-  var inactivityTime = 180000;
+  var inactivityTime = 1800000;
   var timeout;
 
   function resetTimer() {
@@ -359,18 +390,3 @@ js_code = """
 """
 
 components.html(js_code, height=0)
-
-# -------------------------------
-# Restart Logstash Button (Bottom)
-# -------------------------------
-st.markdown("---")
-bottom_col1, bottom_col2, bottom_col3 = st.columns([3, 2, 2])
-with bottom_col2:
-    if st.button("Restart Logstash", key="bottom_restart"):
-        success, msg = restart_logstash()
-        if success:
-            st.success(msg)
-        else:
-            st.error(msg)
-        time.sleep(3)
-        st.rerun()
