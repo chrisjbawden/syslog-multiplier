@@ -37,7 +37,7 @@ COPY logstash.conf /usr/local/bin/logstash.conf
 RUN chmod +x /usr/local/bin/boot.sh
 
 # Ensure logstash start script is executable
-chmod +x /usr/local/bin/start-logstash.sh
+RUN chmod +x /usr/local/bin/start-logstash.sh
 
 # Logstash config tweaks (optional)
 RUN echo "xpack.monitoring.enabled: false" >> /etc/logstash/logstash.yml && \
