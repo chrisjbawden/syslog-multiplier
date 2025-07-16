@@ -1,3 +1,5 @@
+__version__ = "1.0.1"
+
 import streamlit as st
 import os
 import re
@@ -6,6 +8,48 @@ import shutil
 import subprocess
 from datetime import datetime
 import streamlit.components.v1 as components
+
+# ---- Version Check Widget ----
+CURRENT_APP_PATH = os.path.abspath(__file__)
+NEW_APP_PATH = "/opt/syslog-multiplier/new/app.py"  # Path to the new version to check against
+
+def extract_version(filepath):
+    """
+    Extracts __version__ = "x.y.z" from a Python file.
+    """
+    if not os.path.exists(filepath):
+        return None
+    with open(filepath, "r") as f:
+        for line in f:
+            m = re.match(r"__version__\s*=\s*['\"](.+?)['\"]", line.strip())
+            if m:
+                return m.group(1)
+    return None
+
+def compare_versions(v1, v2):
+    # Returns True if v2 > v1 (semantic version, ignores extra labels)
+    def parse(v):
+        return [int(x) for x in v.split(".")]
+    return parse(v2) > parse(v1)
+
+current_version = __version__
+new_version = extract_version(NEW_APP_PATH)
+
+if new_version and compare_versions(current_version, new_version):
+    info_col, update_col = st.columns([4,1])
+    with info_col:
+        st.info(f"**A newer version is available: {new_version}** (current: {current_version})")
+    with update_col:
+        if st.button("Update with newer"):
+            try:
+                # Back up current app.py
+                backup_path = CURRENT_APP_PATH + f".bak_{current_version}"
+                shutil.copy(CURRENT_APP_PATH, backup_path)
+                # Replace with new version
+                shutil.copy(NEW_APP_PATH, CURRENT_APP_PATH)
+                st.success(f"App updated to {new_version} and backed up as {os.path.basename(backup_path)}. Please restart the app.")
+            except Exception as e:
+                st.error(f"Update failed: {e}")
 
 # Hardcoded locations for the configuration and passcode files
 LOGSTASH_CONF_PATH = "/opt/syslog-multiplier/logstash.conf"
@@ -21,24 +65,51 @@ def get_logstash_status():
         return False
 
 def restart_logstash():
-    """Attempts to restart Logstash and returns (success, message)."""
+    """
+    Finds and kills all logstash processes, then runs the launch.sh script.
+    Returns (success, message).
+    """
     try:
-        result = subprocess.run(
-            ["systemctl", "restart", "logstash"],
+        # Find PIDs of logstash processes
+        find_proc = subprocess.run(
+            ["pgrep", "-f", "logstash"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             check=False
         )
-        if result.returncode == 0:
-            # Wait a moment, then check status again
-            time.sleep(1.5)
-            if get_logstash_status():
-                return True, "Logstash restarted successfully."
-            else:
-                return False, "Tried to restart, but Logstash is still not running."
+        pids = [pid for pid in find_proc.stdout.strip().split('\n') if pid.strip().isdigit()]
+
+        # Kill all logstash PIDs
+        if pids:
+            kill_cmd = ["kill", "-9"] + pids
+            kill_proc = subprocess.run(
+                kill_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=False
+            )
+            time.sleep(1)  # Give a moment for processes to die
+
+        # Run the launch script
+        launch_script = "/opt/syslog-multiplier/start-logstash.sh"
+        run_script = subprocess.run(
+            [launch_script],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False
+        )
+
+        time.sleep(2)  # Give time for logstash to start
+
+        # Check if Logstash is running
+        if get_logstash_status():
+            return True, "Logstash was killed and restarted successfully."
         else:
-            return False, f"Failed to restart Logstash: {result.stderr.strip()}"
+            return False, f"Tried to restart, but Logstash is still not running. Script output: {run_script.stdout.strip()} Error: {run_script.stderr.strip()}"
+
     except Exception as e:
         return False, f"Exception while restarting: {e}"
 
@@ -84,9 +155,6 @@ with st.container():
                 else:
                     st.error(msg)
                 st.rerun()
-    else:
-        with status_col:
-            st.success("✅ Logstash is running.")
 
 # ------------------------------- Main App: Raw Configuration Editor -------------------------------
 
