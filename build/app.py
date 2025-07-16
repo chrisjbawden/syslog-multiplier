@@ -1,4 +1,4 @@
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 import streamlit as st
 import os
@@ -11,7 +11,7 @@ import streamlit.components.v1 as components
 
 # ---- Version Check Widget ----
 CURRENT_APP_PATH = os.path.abspath(__file__)
-NEW_APP_PATH = "/opt/syslog-multiplier/new/app.py"  # Path to the new version to check against
+NEW_APP_PATH = "/usr/local/bin/app.py"  # Path to the new version to check against
 
 def extract_version(filepath):
     """
@@ -93,7 +93,7 @@ def restart_logstash():
             time.sleep(1)  # Give a moment for processes to die
 
         # Run the launch script
-        launch_script = "/opt/syslog-multiplier/start-logstash.sh"
+        launch_script = "/usr/local/bin/start-logstash.sh"
         run_script = subprocess.run(
             [launch_script],
             stdout=subprocess.PIPE,
