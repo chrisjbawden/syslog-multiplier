@@ -10,7 +10,7 @@ Monolithic Logstash forwarder with Streamlit UI for easy management .
 Docker run:
 ```
 docker run -it -d \
-  -p 8502:8501 \
+  -p 8501:8501 \
   -p 514:514 \
   -p 514:514/udp \
   -v [direcotry of your choice]:/opt/syslog-multiplier/ \
