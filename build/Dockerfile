@@ -2,7 +2,7 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required system packages and dependencies
+# Install dependencies and Logstash
 RUN apt-get update && \
     apt-get install -y \
         bash \
@@ -15,31 +15,28 @@ RUN apt-get update && \
         lsb-release \
         ca-certificates \
         openjdk-17-jdk && \
-    # Add Elastic GPG key and repository for Logstash
     wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elastic-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list && \
     apt-get update && \
     apt-get install -y logstash && \
     /usr/share/logstash/bin/logstash-plugin install logstash-output-syslog && \
-    # Install Python packages
     pip3 install --break-system-packages --no-cache-dir streamlit evtx xmltodict && \
-    # Clean up
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create app directory
-RUN mkdir -p /opt/syslog-multiplier
+# Create the persistent data dir and defaults dir
+RUN mkdir -p /opt/syslog-multiplier /usr/local/bin/
 
-# Copy scripts and app files
-COPY start-logstash.sh /opt/syslog-multiplier/start-logstash.sh
-COPY launch.sh /opt/syslog-multiplier/launch.sh
-COPY app.py /opt/syslog-multiplier/app.py
-COPY logstash.conf /opt/syslog-multiplier/logstash.conf
+# Copy default scripts/configs to defaults/
+COPY start-logstash.sh /usr/local/bin/start-logstash.sh
+COPY boot.sh /usr/local/bin/boot.sh
+COPY app.py /usr/local/bin/app.py
+COPY logstash.conf /usr/local/bin/logstash.conf
 
-# Make scripts executable
-RUN chmod +x /opt/syslog-multiplier/start-logstash.sh /opt/syslog-multiplier/launch.sh
+# Make launch script executable
+RUN chmod +x /opt/syslog-multiplier/boot.sh
 
-# Optionally, add your config tweaks for Logstash here
+# Logstash config tweaks (optional)
 RUN echo "xpack.monitoring.enabled: false" >> /etc/logstash/logstash.yml && \
     echo "config.reload.automatic: true" >> /etc/logstash/logstash.yml && \
     echo "config.reload.interval: 3s" >> /etc/logstash/logstash.yml
@@ -48,5 +45,8 @@ EXPOSE 8501
 EXPOSE 514/tcp
 EXPOSE 514/udp
 
-# Set the entrypoint to your launch script
+VOLUME ["/opt/syslog-multiplier"]
+
 ENTRYPOINT ["/opt/syslog-multiplier/launch.sh"]
+
+
