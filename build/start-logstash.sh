@@ -6,7 +6,7 @@ mkdir -p "$(dirname "$LOG_FILE")"
 touch "$LOG_FILE"
 
 # Start Logstash in the background, logging to a dedicated file
-/usr/share/logstash/bin/logstash -f /opt/syslog-multiplier/logstash.conf > "$LOG_FILE" 2>&1 &
+/usr/share/logstash/bin/logstash -f /opt/syslog-multiplier/logstash.conf >> "$LOG_FILE" 2>&1 &
 LOGSTASH_PID=$!
 
 # Echo the PID into the log file
