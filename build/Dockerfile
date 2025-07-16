@@ -34,7 +34,7 @@ COPY app.py /usr/local/bin/app.py
 COPY logstash.conf /usr/local/bin/logstash.conf
 
 # Make launch script executable
-RUN chmod +x /opt/syslog-multiplier/boot.sh
+RUN chmod +x /usr/local/bin/boot.sh
 
 # Logstash config tweaks (optional)
 RUN echo "xpack.monitoring.enabled: false" >> /etc/logstash/logstash.yml && \
