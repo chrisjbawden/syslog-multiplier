@@ -1,4 +1,4 @@
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 import streamlit as st
 import os
@@ -35,21 +35,6 @@ def compare_versions(v1, v2):
 current_version = __version__
 new_version = extract_version(NEW_APP_PATH)
 
-if new_version and compare_versions(current_version, new_version):
-    info_col, update_col = st.columns([4,1])
-    with info_col:
-        st.info(f"**A newer version is available: {new_version}** (current: {current_version})")
-    with update_col:
-        if st.button("Update with newer"):
-            try:
-                # Back up current app.py
-                backup_path = CURRENT_APP_PATH + f".bak_{current_version}"
-                shutil.copy(CURRENT_APP_PATH, backup_path)
-                # Replace with new version
-                shutil.copy(NEW_APP_PATH, CURRENT_APP_PATH)
-                st.success(f"App updated to {new_version} and backed up as {os.path.basename(backup_path)}. Please restart the app.")
-            except Exception as e:
-                st.error(f"Update failed: {e}")
 
 # Hardcoded locations for the configuration and passcode files
 LOGSTASH_CONF_PATH = "/opt/syslog-multiplier/logstash.conf"
@@ -106,9 +91,9 @@ def restart_logstash():
 
         # Check if Logstash is running
         if get_logstash_status():
-            return True, "Logstash was killed and restarted successfully."
+            return True, "Logstash restarted."
         else:
-            return False, f"Tried to restart, but Logstash is still not running. Script output: {run_script.stdout.strip()} Error: {run_script.stderr.strip()}"
+            return False, f"Error. Script output: {run_script.stdout.strip()} Error: {run_script.stderr.strip()}"
 
     except Exception as e:
         return False, f"Exception while restarting: {e}"
@@ -140,13 +125,34 @@ if not st.session_state["authenticated"]:
             st.error("Incorrect passcode")
     st.stop()
 
+#---------------------------------- Version ----------------------------------------------
+
+if new_version and compare_versions(current_version, new_version):
+    info_col, update_col = st.columns([4,1])
+    with info_col:
+        st.info(f"**A newer version is available: {new_version}** (current: {current_version})")
+    with update_col:
+        if st.button("Update with newer"):
+            try:
+                # Back up current app.py
+                backup_path = CURRENT_APP_PATH + f".bak_{current_version}"
+                shutil.copy(CURRENT_APP_PATH, backup_path)
+                # Replace with new version
+                shutil.copy(NEW_APP_PATH, CURRENT_APP_PATH)
+                st.success(f"App updated to {new_version} and backed up as {os.path.basename(backup_path)}. Please restart the app.")
+            except Exception as e:
+                st.error(f"Update failed: {e}")
+
+
+
+
 # ------------------------------- Logstash Status Section -------------------------------
 with st.container():
     status_col, button_col = st.columns([3, 1])
     is_running = get_logstash_status()
     if not is_running:
         with status_col:
-            st.warning("⚠️ Logstash is **not running**! The configuration editor will not have any effect until Logstash is restarted.")
+            st.warning("⚠️ Logstash is **not running**!")
         with button_col:
             if st.button("Restart Logstash"):
                 success, msg = restart_logstash()
@@ -194,6 +200,9 @@ with col2:
             with open(LOGSTASH_CONF_PATH, "w") as f:
                 f.write(raw_config)
             st.success("Configuration saved!")
+            success, msg = restart_logstash()
+            time.sleep(3)
+            st.rerun()
         except Exception as e:
             st.error(f"Failed to save configuration: {e}")
 
@@ -363,4 +372,5 @@ with bottom_col2:
             st.success(msg)
         else:
             st.error(msg)
+        time.sleep(3)
         st.rerun()
