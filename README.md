@@ -1,5 +1,11 @@
 
+# Summary
 
+Monolithic Logstash forwarder with Streamlit UI for easy management .
+
+<hr>
+
+# Deployment
 
 Docker run:
 ```
@@ -12,6 +18,8 @@ docker run -it -d \
   --name syslog-multiplier \
   chrisjbawden/syslog-multiplier
 ```
+
+# Notes
 
 1. Log into the web console http://[ip/url]:8501
 
