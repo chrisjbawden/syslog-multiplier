@@ -7,6 +7,7 @@ docker run -it -d \
   -p 8502:8501 \
   -p 514:514 \
   -p 514:514/udp \
+  -v [direcotry of your choice]:/opt/syslog-multiplier/ \
   --restart unless-stopped \
   --name syslog-multiplier \
   chrisjbawden/syslog-multiplier
@@ -21,4 +22,4 @@ docker run -it -d \
 
 ---
 
-Logstash configuration file resides in /opt/syslog-multiplier
+Directory - /opt/syslog-multiplier/ - stores the streamlit app, logstash config and logstash logs.
