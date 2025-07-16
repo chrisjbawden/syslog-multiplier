@@ -47,6 +47,6 @@ EXPOSE 514/udp
 
 VOLUME ["/opt/syslog-multiplier"]
 
-ENTRYPOINT ["/opt/syslog-multiplier/launch.sh"]
+ENTRYPOINT ["/usr/local/bin/boot.sh"]
 
 
