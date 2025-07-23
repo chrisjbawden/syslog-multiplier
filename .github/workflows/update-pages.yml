@@ -1,40 +1,41 @@
 name: Deploy Docs to the repo's github-pages
 
 on:
-  # Automatic rebuild whenever anything under docs/ is modified on main
+  # Re‑publish whenever anything in docs/ changes on main
   push:
     branches: [ "main" ]
-    paths:
-      - 'docs/**'
+    paths:     [ "docs/**" ]
 
+  # Manual “Run workflow” button
   workflow_dispatch: {}
 
 jobs:
-  deploy-pages:
-    # The built‑in Pages actions require these explicit permissions
+  deploy-docs:
+    # Required permissions for the Pages actions
     permissions:
-      contents: read        # to fetch the source
-      pages: write          # to push the artefact to Pages
-      id-token: write       # to authenticate to Pages
+      contents: read      # fetch source
+      pages: write        # push artefact to Pages
+      id-token: write     # auth for deployment
+
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url }}
 
     steps:
-      # 1. Check out repository
+      # 1 – Check out the repo
       - uses: actions/checkout@v4
 
-      # 2. Set up the Pages deployment environment
-      - uses: actions/configure-pages@v3
+      # 2 – Configure Pages (sets up the deployment target)
+      - uses: actions/configure-pages@v4
 
-      # 3. Upload the docs/ folder as a Pages artefact
-      - name: Upload docs folder
-        uses: actions/upload-pages-artifact@v2
+      # 3 – Package & upload the docs folder
+      - name: Upload docs artefact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: docs    # ← static content source (HTML, CSS, etc.)
+          path: docs        # ← static site root
 
-      # 4. Publish it
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+      # 4 – Deploy to GitHub Pages
+      - name: Deploy
+        id: deploy
+        uses: actions/deploy-pages@v4
