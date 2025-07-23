@@ -1,6 +1,8 @@
+# .github/workflows/docker-image.yml
 name: Docker Image CI
 
 on:
+  # ── automatic triggers ──────────────────────────────────────────────
   push:
     branches: [ "main" ]
     paths:
@@ -10,24 +12,42 @@ on:
     paths:
       - 'build/**'
 
+  # ── manual trigger (appears as “Run workflow”) ──────────────────────
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Optional tag (defaults to timestamp if left blank)"
+        required: false
+        type: string
+
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-      
-    - name: Build and push docker image
-      run: |
-        TIMESTAMP=$(date +%Y%m%d%H%M)
-        docker build ./build --file ./build/Dockerfile --tag chrisjbawden/syslog-multiplier:$TIMESTAMP --tag chrisjbawden/syslog-multiplier:latest
-        docker push chrisjbawden/syslog-multiplier:$TIMESTAMP
-        docker push chrisjbawden/syslog-multiplier:latest
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        env:
+          # Allow workflow_dispatch to override TIMESTAMP‑based tag
+          IMAGE_TAG: ${{ github.event.inputs.tag || '' }}
+        run: |
+          # Choose tag: manual input or timestamp
+          if [ -z "$IMAGE_TAG" ]; then
+            IMAGE_TAG=$(date +%Y%m%d%H%M)
+          fi
+          echo "Using tag: $IMAGE_TAG"
+
+          docker build ./build \
+            --file ./build/Dockerfile \
+            --tag chrisjbawden/syslog-multiplier:$IMAGE_TAG \
+            --tag chrisjbawden/syslog-multiplier:latest
+
+          docker push chrisjbawden/syslog-multiplier:$IMAGE_TAG
+          docker push chrisjbawden/syslog-multiplier:latest
