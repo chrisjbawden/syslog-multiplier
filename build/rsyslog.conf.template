@@ -1,0 +1,11 @@
+module(load="imudp")
+input(type="imudp" port="514")
+
+module(load="imtcp")
+input(type="imtcp" port="514")
+
+# Forwarding rules dynamically inserted here:
+{{FORWARD_RULES}}
+
+# Log locally as well (optional)
+*.* /var/log/syslog
