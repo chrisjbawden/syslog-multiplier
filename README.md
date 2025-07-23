@@ -1,7 +1,7 @@
 
 # Summary
 
-Simple syslog forwarder/multiplier using rsyslog and a automated script to build the config (the environment arguments).
+Simple syslog forwarder and duplicator - so you can fork the traffic to additional endpoint. It uses rsyslog with an automated script using the environment arguments provided to build the config.
 
 <hr>
 
