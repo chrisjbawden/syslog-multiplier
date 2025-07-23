@@ -14,6 +14,6 @@ docker run -d \
   -p 514:514/udp \
   -p 514:514/tcp \
   -e FORWARD_TARGETS="udp:10.0.0.242:3100,tcp:10.0.0.242:514" \
-  syslog-multiplier
+  chrisjbawden/syslog-multiplier
 ```
 
