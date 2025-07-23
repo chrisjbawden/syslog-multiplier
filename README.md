@@ -1,7 +1,7 @@
 
 # Summary
 
-Monolithic Logstash forwarder with Streamlit UI for easy management .
+Simple syslog forwarder/multiplier using rsyslog and a automated script to build the config (the environment arguments).
 
 <hr>
 
@@ -9,25 +9,11 @@ Monolithic Logstash forwarder with Streamlit UI for easy management .
 
 Docker run:
 ```
-docker run -it -d \
-  -p 8501:8501 \
-  -p 514:514 \
-  -p 514:514/udp \
-  -v [direcotry of your choice]:/opt/syslog-multiplier/ \
-  --restart unless-stopped \
+docker run -d \
   --name syslog-multiplier \
-  chrisjbawden/syslog-multiplier
+  -p 514:514/udp \
+  -p 514:514/tcp \
+  -e FORWARD_TARGETS="udp:10.0.0.242:3100,tcp:10.0.0.242:514" \
+  syslog-multiplier
 ```
 
-# Notes
-
-1. Log into the web console http://[ip/url]:8501
-
-      Note: Default code/password: 1234
-
-2. Modify the logstash config and hit save
-
-
----
-
-Directory - /opt/syslog-multiplier/ - stores the streamlit app, logstash config and logstash logs.
